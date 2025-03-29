@@ -254,4 +254,87 @@
     });
   });
 
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.querySelector('.portfolio-slider');
+    const slides = document.querySelectorAll('.portfolio-slide');
+    const prevBtn = document.querySelector('.slider-prev');
+    const nextBtn = document.querySelector('.slider-next');
+    const dotsContainer = document.querySelector('.slider-dots');
+    
+    let currentIndex = 0;
+    let slideWidth = slides[0].offsetWidth + 30; // Ancho del slide + gap
+    let autoPlayInterval;
+    
+    // Crear dots de navegación
+    slides.forEach((_, index) => {
+      const dot = document.createElement('span');
+      dot.classList.add('slider-dot');
+      if (index === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => goToSlide(index));
+      dotsContainer.appendChild(dot);
+    });
+    
+    const dots = document.querySelectorAll('.slider-dot');
+    
+    // Función para mover el carrusel
+    function goToSlide(index) {
+      currentIndex = index;
+      slider.scrollTo({
+        left: index * slideWidth,
+        behavior: 'smooth'
+      });
+      updateDots();
+    }
+    
+    // Actualizar dots activos
+    function updateDots() {
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentIndex);
+      });
+    }
+    
+    // Navegación
+    prevBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex > 0) ? currentIndex - 1 : slides.length - 1;
+      goToSlide(currentIndex);
+      resetAutoPlay();
+    });
+    
+    nextBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex < slides.length - 1) ? currentIndex + 1 : 0;
+      goToSlide(currentIndex);
+      resetAutoPlay();
+    });
+    
+    // Autoplay
+    function startAutoPlay() {
+      autoPlayInterval = setInterval(() => {
+        currentIndex = (currentIndex < slides.length - 1) ? currentIndex + 1 : 0;
+        goToSlide(currentIndex);
+      }, 5000); // Cambia cada 5 segundos
+    }
+    
+    function resetAutoPlay() {
+      clearInterval(autoPlayInterval);
+      startAutoPlay();
+    }
+    
+    // Iniciar autoplay
+    startAutoPlay();
+    
+    // Pausar autoplay al interactuar
+    slider.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
+    slider.addEventListener('mouseleave', startAutoPlay);
+    
+    // Actualizar en redimensionamiento
+    window.addEventListener('resize', () => {
+      slideWidth = slides[0].offsetWidth + 30;
+      goToSlide(currentIndex);
+    });
+  });
+
+
+
+
 })()
